@@ -1,4 +1,4 @@
-package com.kakao.homework.core.Resolver;
+package com.kakao.homework.core.resolver;
 
 import com.kakao.homework.core.anotation.UserInfoResolver;
 import com.kakao.homework.data.sprinkling.dto.UserInfoDto;

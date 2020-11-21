@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/Api")
+@RequestMapping("/api")
 public class SprinklingApi {
     private final SprinklingService sprinklingService;
     private final UUIDTokenMaker uuid;
 
-    @GetMapping(path="/Sprinkling")
-    public String RequestSprinklingApi(@UserInfoResolver UserInfoDto user, @RequestBody SprinklingApiDto.Sprinkling body)
-    {
+    @GetMapping(path="/sprinkling")
+    public String RequestSprinklingApi(@UserInfoResolver UserInfoDto user, @RequestBody SprinklingApiDto.Sprinkling body) throws Exception {
         return sprinklingService.Sprinkling(user, body);
     }
 
