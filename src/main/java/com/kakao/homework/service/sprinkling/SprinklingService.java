@@ -11,6 +11,7 @@ import com.kakao.homework.repository.RedisCrudRepo;
 import com.kakao.homework.repository.sprinkling.DistMoneyRepository;
 import com.kakao.homework.repository.sprinkling.ReceiverMoneyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class SprinklingService {
     //뿌릴금액, 뿌릴 인원을 요청값으로 받는다.
@@ -34,7 +37,6 @@ public class SprinklingService {
     public String Sprinkling(UserInfoDto header, SprinklingApiDto.Sprinkling body) throws Exception {
         String token;
         String userId;
-        //CacheEntity cacheEntity;
         //고유토큰 3자리 발급
         token=uuidTokenMaker.getNewToken();
         userId=header.getUserId().toString();
@@ -50,10 +52,57 @@ public class SprinklingService {
         return token;
     }
 
-    public String Receiver(UserInfoDto header, SprinklingApiDto.Receiver body){
+    @Transactional
+    public String Receiver(UserInfoDto header, String token) throws Exception{
+        Optional<CacheEntity> cacheEntity = redisCrudRepo.findById(token);
 
+        boolean enabled = cacheEntity.isPresent();
+        if(enabled)
+        {
+            //Optional<DistMoney> distMoney = distMoneyRepository.findByAssignCodeAndDistDateTime(token,LocalDateTime.now().minusDays(7)); //7일 기간 동안만 조회
+            DistMoney distMoney = distMoneyRepository.findByAssignCodeAndDistDateTimeBetween(token, LocalDateTime.now().minusDays(7L), LocalDateTime.now());
+            //DistMoney distMoney = distMoneyRepository.findByAssignCode(token);
+            //List<ReceiverMoney> receiverMonies = receiverMoneyRepository.findByAssignCodeAndEnableYn(token, false);
+            if(cacheEntity.get().getUserId().equals(header.getUserId().toString())) //뿌린자가 받기 요청시 redis
+            {
+                return "받기 대상자가 아닙니다. A1 : " + LocalDateTime.now(); //Exception 나중에 처리 해야함.
+            }
+            /*if(!distMoney.isPresent()) //7일이 지난데이터를 받기 요청시
+            {
+                return "유효하지 않은 요청입니다."; //Exception 나중에 처리 해야함.
+            }*/
 
-        return "";
+            for (ReceiverMoney receiverMoney : distMoney.getReceiverMoneyList()) {
+                if(receiverMoney.getRecieverId()!=null) {
+                    if (receiverMoney.getRecieverId().equals(header.getUserId().toString())) // 받았던 사람이 받기 요청시
+                    {
+                        return "유효하지 않은 요청입니다. A2 : " + LocalDateTime.now();
+                    }
+                }
+            }
+
+            for (ReceiverMoney receiverMoney : distMoney.getReceiverMoneyList()) {
+                if(!receiverMoney.isEnableYn()){
+                    if(receiverMoney.getAssignCode().getUserId().equals(header.getUserId().toString())) // 뿌린자가 받기 요청시 mariadb
+                    {
+                        return "유효하지 않은 요청입니다. A3 : " + LocalDateTime.now();
+                    }
+                    receiverMoney = receiverMoney.builder()
+                            .id(receiverMoney.getId())
+                            .recieverMoney(receiverMoney.getRecieverMoney())
+                            .assignCode(distMoney)
+                            .recieverId(header.getUserId().toString())
+                            .enableYn(true).build();
+                    receiverMoneyRepository.save(receiverMoney);
+                    return "sucess : " + receiverMoney.getRecieverMoney(); //성공시 해당 금액을 응답값으로 내려줍니다.
+                }
+            }
+            return "token : " + cacheEntity.get().getAssignCode(); //기간이 만료 되었거나 모든 사용자가 돈을 받았습니다.
+        }
+        else //기간만료 처리 받기 실패
+        {
+            return "기간이 만료 되었습니다. A4 : " + LocalDateTime.now(); //Exception 나중에 처리 해야함.
+        }
     }
 
     public String Search(UserInfoDto header, SprinklingApiDto.Search body){

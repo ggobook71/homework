@@ -16,7 +16,8 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     password: 1234
     username: kakao
-    url: jdbc:mysql://localhost:3306/kakao_research?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/kakao_research?useSSL=false&characterEncoding=UTF-8
   redis:
     host: localhost
     port: 6379
+

@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 @Getter
 @RedisHash(value = "token", timeToLive = 600)
-public class CacheEntity implements Serializable {
+public class CacheEntity{
     @Id
     private String assignCode;
     private String userId;

@@ -21,11 +21,14 @@ public class ReceiverMoney {
     @Nullable
     private String recieverId;
     private int recieverMoney;
+    private boolean enableYn;
     @Builder
-    public ReceiverMoney(String recieverId, int recieverMoney, DistMoney assignCode)
+    public ReceiverMoney(Long id, String recieverId, int recieverMoney, DistMoney assignCode, boolean enableYn)
     {
+        this.id = id;
         this.recieverId = recieverId;
         this.recieverMoney = recieverMoney;
         this.assignCode = assignCode;
+        this.enableYn = enableYn;
     }
 }

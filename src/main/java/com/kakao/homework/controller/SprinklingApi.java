@@ -10,19 +10,23 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", method = {RequestMethod.GET, RequestMethod.POST})
 public class SprinklingApi {
     private final SprinklingService sprinklingService;
-    private final UUIDTokenMaker uuid;
 
-    @GetMapping(path="/sprinkling")
+    @PostMapping(path = "/sprinkling")
     public String RequestSprinklingApi(@UserInfoResolver UserInfoDto user, @RequestBody SprinklingApiDto.Sprinkling body) throws Exception {
         return sprinklingService.Sprinkling(user, body);
     }
 
-    @GetMapping("/test")
-    public String RequestTest()
-    {
-        return uuid.getNewToken();
+    /*@GetMapping(path = "/receiveMoney")
+    public String RequestReceiveMoneyApi(@UserInfoResolver UserInfoDto user, @PathVariable("assignToken") String body) throws Exception {
+        return sprinklingService.Receiver(user, body);
+    }*/
+
+    @PostMapping(path = "/receiveMoney")
+    public String RequestReceiveMoneyApi(@UserInfoResolver UserInfoDto user, @RequestBody SprinklingApiDto.Receiver body) throws Exception {
+        return sprinklingService.Receiver(user, body.getToken());
     }
+
 }

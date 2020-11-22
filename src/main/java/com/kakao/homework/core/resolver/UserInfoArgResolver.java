@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
 public class UserInfoArgResolver implements HandlerMethodArgumentResolver {
-    UserInfoDto userInfoDto;
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(UserInfoResolver.class);
@@ -20,9 +19,9 @@ public class UserInfoArgResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        UserInfoDto userInfoDto =new UserInfoDto();
         userInfoDto.setUserId(request.getIntHeader("X-USER-ID"));
         userInfoDto.setRoomId(request.getHeader("X-ROOM-ID"));
-
         return userInfoDto;
     }
 }

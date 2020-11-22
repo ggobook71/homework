@@ -24,6 +24,7 @@ class SprinklingServiceTest {
 
     private UserInfoDto userInfoDto = new UserInfoDto();
     private SprinklingApiDto.Sprinkling sprinklingApiDto = new SprinklingApiDto.Sprinkling();
+    private SprinklingApiDto.Receiver receiverApiDto = new SprinklingApiDto.Receiver();
 
     @Test
     void sprinkling() throws Exception {
@@ -32,6 +33,17 @@ class SprinklingServiceTest {
         sprinklingApiDto.setDistMoney(5000);
         sprinklingApiDto.setReceiveNum(5);
         String result = sprinklingService.Sprinkling(userInfoDto, sprinklingApiDto);
+
         assertTrue(result.length() == 3);
     }
+
+    @Test
+    void receiver() throws Exception{
+        userInfoDto.setRoomId("abc");
+        userInfoDto.setUserId(123);
+        receiverApiDto.setToken("bae");
+        String result = sprinklingService.Receiver(userInfoDto, receiverApiDto.getToken());
+        assertTrue(result.length() != 2);
+    }
+
 }

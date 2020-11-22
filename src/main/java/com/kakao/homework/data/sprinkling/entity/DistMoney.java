@@ -4,11 +4,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.hibernate.type.descriptor.java.JdbcDateTypeDescriptor.DATE_FORMAT;
 
 @NoArgsConstructor
 @Getter
@@ -24,6 +27,7 @@ public class DistMoney {
     private String roomId;
     private int distMoney;
     private int receiveNum;
+    //@DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime distDateTime;
     @Builder
     public DistMoney(String assignCode, String userId, String roomId, int distMoney, int receiveNum, LocalDateTime distDateTime)

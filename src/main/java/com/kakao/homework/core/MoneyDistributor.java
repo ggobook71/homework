@@ -33,10 +33,10 @@ public class MoneyDistributor {
         {
             int div = random.nextInt(money-distnumber-i);
             money = money - div;
-            receiverMoney = receiverMoney.builder().recieverMoney(div).assignCode(distMoney).build();
+            receiverMoney = receiverMoney.builder().recieverMoney(div).assignCode(distMoney).enableYn(false).build();
             receiverMoneyList.add(receiverMoney);
         }
-        receiverMoney = receiverMoney.builder().recieverMoney(money).assignCode(distMoney).build();
+        receiverMoney = receiverMoney.builder().recieverMoney(money).assignCode(distMoney).enableYn(false).build();
         receiverMoneyList.add(receiverMoney);
         return receiverMoneyList;
     }
