@@ -1,118 +1,96 @@
 package com.kakao.homework.service.sprinkling;
 
-import com.kakao.homework.core.MoneyDistributor;
+import com.kakao.homework.core.ResponseCreator;
+import com.kakao.homework.core.exception.BusinessException;
+import com.kakao.homework.core.exception.ErrorCode;
+import com.kakao.homework.core.sprinkling.MoneyDistributor;
 import com.kakao.homework.core.UUIDTokenMaker;
+import com.kakao.homework.core.sprinkling.ReceiveMoney;
+import com.kakao.homework.core.sprinkling.ReceiverInspector;
 import com.kakao.homework.data.sprinkling.dto.SprinklingBodyDto;
 import com.kakao.homework.data.sprinkling.dto.SprinklingHeaderDto;
-import com.kakao.homework.data.sprinkling.entity.CacheEntity;
+import com.kakao.homework.data.sprinkling.entity.RedisEntity;
 import com.kakao.homework.data.sprinkling.entity.DistMoney;
-import com.kakao.homework.data.sprinkling.entity.ReceiverMoney;
-import com.kakao.homework.repository.RedisCrudRepo;
+import com.kakao.homework.data.sprinkling.entity.ReceiverInfo;
+import com.kakao.homework.repository.RedisCrudRepository;
 import com.kakao.homework.repository.sprinkling.DistMoneyRepository;
 import com.kakao.homework.repository.sprinkling.ReceiverMoneyRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
-@Slf4j
 @Service
 public class SprinklingService {
-    //뿌릴금액, 뿌릴 인원을 요청값으로 받는다.
     private final UUIDTokenMaker uuidTokenMaker;
     private final MoneyDistributor moneyDistributor;
-    private final RedisCrudRepo redisCrudRepo;
+    private final RedisCrudRepository redisCrudRepository;
     private final RedissonClient redissonClient;
     private final DistMoneyRepository distMoneyRepository;
     private final ReceiverMoneyRepository receiverMoneyRepository;
+    private final ResponseCreator responseCreator;
+    private final ReceiverInspector receiverInspector;
+    private final ReceiveMoney receiveMoney;
+    private final long oneWeek = 7L;
 
     @Transactional
-    public String Sprinkling(SprinklingHeaderDto header, SprinklingBodyDto body) throws Exception {
-        String token;
-        String userId;
+    public Map Sprinkling(SprinklingHeaderDto header, SprinklingBodyDto body) {
         //고유토큰 3자리 발급
-        token=uuidTokenMaker.getNewToken();
-        userId=header.getUserId().toString();
-        CacheEntity cacheEntity = CacheEntity.builder().assignCode(token).userId(userId).build();
+        String token = uuidTokenMaker.getNewToken();
         //redis저장
-        redisCrudRepo.save(cacheEntity);
-        //db저장
-        List<ReceiverMoney> receiverMonies;
-        receiverMonies = moneyDistributor.RandomDist(body.getDistMoney(), body.getReceiveNum(),header,body,token);
+        RedisEntity redisEntity = RedisEntity.builder().assignCode(token).userId(header.getUserId()).build();
+        redisCrudRepository.save(redisEntity);
+        //돈 랜덤 분배 및 저장
+        List<ReceiverInfo> receiverMonies = moneyDistributor.RandomDist(body.getDistMoney(), body.getReceiveNum(), header, body, token);
         DistMoney distMoney = receiverMonies.get(0).getAssignCode();
         distMoneyRepository.save(distMoney);
         receiverMoneyRepository.saveAll(receiverMonies);
-        return token;
+        return responseCreator.SingleKeyValueString("token", token);
     }
 
     @Transactional
-    public String Receiver(SprinklingHeaderDto header, String token) throws Exception{
-
-        //락구현 해야함...
-
-
-
-        Optional<CacheEntity> cacheEntity = redisCrudRepo.findById(token);
-        boolean enabled = cacheEntity.isPresent();
-        if(enabled)
-        {
-            //Optional<DistMoney> distMoney = distMoneyRepository.findByAssignCodeAndDistDateTime(token,LocalDateTime.now().minusDays(7)); //7일 기간 동안만 조회
-            DistMoney distMoney = distMoneyRepository.findByAssignCodeAndDistDateTimeBetween(token, LocalDateTime.now().minusDays(7L), LocalDateTime.now());
-            //DistMoney distMoney = distMoneyRepository.findByAssignCode(token);
-            //List<ReceiverMoney> receiverMonies = receiverMoneyRepository.findByAssignCodeAndEnableYn(token, false);
-            if(cacheEntity.get().getUserId().equals(header.getUserId().toString())) //뿌린자가 받기 요청시 redis
-            {
-                return "받기 대상자가 아닙니다. A1 : " + LocalDateTime.now(); //Exception 나중에 처리 해야함.
-            }
-            /*if(!distMoney.isPresent()) //7일이 지난데이터를 받기 요청시
-            {
-                return "유효하지 않은 요청입니다."; //Exception 나중에 처리 해야함.
-            }*/
-
-            for (ReceiverMoney receiverMoney : distMoney.getReceiverMoneyList()) {
-                if(receiverMoney.getRecieverId()!=null) {
-                    if (receiverMoney.getRecieverId().equals(header.getUserId().toString())) // 받았던 사람이 받기 요청시
-                    {
-                        return "유효하지 않은 요청입니다. A2 : " + LocalDateTime.now();
-                    }
+    public Map Receiving(SprinklingHeaderDto header, String token) throws Exception {
+        //distribute lock
+        RReadWriteLock rwlock = redissonClient.getReadWriteLock(token);
+        RLock lock = rwlock.readLock();
+        lock.lock();
+        boolean res = lock.tryLock(100, 10, TimeUnit.SECONDS); //100초까지 대기 10초후에 락 해제
+        if (res) {
+            try {
+                Optional<RedisEntity> cacheEntity = redisCrudRepository.findById(token);
+                boolean enabled = cacheEntity.isPresent();
+                if (enabled) {
+                    DistMoney distMoney = distMoneyRepository.findByAssignCodeAndDistDateTimeBetween(
+                            token, LocalDateTime.now().minusDays(oneWeek), LocalDateTime.now());
+                    receiverInspector.ExceptionProcessor(cacheEntity, header, distMoney); //예외처리 로직
+                    ReceiverInfo receiverInfo = receiveMoney.save(header, distMoney); //저장처리
+                    receiverMoneyRepository.save(receiverInfo);
+                    return responseCreator.SingleKeyValueInt("receive_money", receiverInfo.getRecieverMoney()); //성공시 해당 금액을 응답값으로 내려줍니다.
+                } else {
+                    throw new BusinessException("받기 가능시간이 만료 되었습니다.", ErrorCode.FAILED_GET_MONEY_MINUTE); //기간만료 처리 받기 실패
                 }
+            } finally {
+                lock.unlock(); //처리 후 락 해제
             }
-
-            for (ReceiverMoney receiverMoney : distMoney.getReceiverMoneyList()) {
-                if(!receiverMoney.isEnableYn()){
-                    if(receiverMoney.getAssignCode().getUserId().equals(header.getUserId().toString())) // 뿌린자가 받기 요청시 mariadb
-                    {
-                        return "유효하지 않은 요청입니다. A3 : " + LocalDateTime.now();
-                    }
-                    receiverMoney = receiverMoney.builder()
-                            .id(receiverMoney.getId())
-                            .recieverMoney(receiverMoney.getRecieverMoney())
-                            .assignCode(distMoney)
-                            .recieverId(header.getUserId().toString())
-                            .enableYn(true).build();
-                    receiverMoneyRepository.save(receiverMoney);
-                    return "sucess : " + receiverMoney.getRecieverMoney(); //성공시 해당 금액을 응답값으로 내려줍니다.
-                }
-            }
-            return "token : " + cacheEntity.get().getAssignCode(); //기간이 만료 되었거나 모든 사용자가 돈을 받았습니다.
         }
-        else //기간만료 처리 받기 실패
-        {
-            return "기간이 만료 되었습니다. A4 : " + LocalDateTime.now(); //Exception 나중에 처리 해야함.
-        }
+        throw new BusinessException("유효 하지 않은 요청입니다.", ErrorCode.FAILED_GET_MONEY_BAD_REQUEST);
     }
 
     @Transactional
-    public Map Search(SprinklingHeaderDto header, String token){
+    public Map Searching(SprinklingHeaderDto header, String token) {
+
         DistMoney distMoney = distMoneyRepository.findByAssignCodeAndUserIdAndDistDateTimeBetween(
-                token, header.getUserId().toString(), LocalDateTime.now().minusDays(7L), LocalDateTime.now()); //7일 기간 동안만 조회 가능
+                token, header.getUserId(), LocalDateTime.now().minusDays(oneWeek), LocalDateTime.now()); //7일 기간 동안만 조회 가능
+        if (distMoney == null) {
+            throw new BusinessException("조회 권한이 없습니다.", ErrorCode.FAILED_SEARCH_RECEIVER_INFO);
+        }
         return distMoney.getDistMoneyState();
     }
-
 }

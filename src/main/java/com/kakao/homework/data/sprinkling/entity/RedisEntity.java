@@ -14,13 +14,13 @@ import java.io.Serializable;
 
 @Getter
 @RedisHash(value = "token", timeToLive = 600)
-public class CacheEntity{
+public class RedisEntity {
     @Id
     private String assignCode;
-    private String userId;
+    private Integer userId;
 
     @Builder
-    public CacheEntity(String assignCode, String userId)
+    public RedisEntity(String assignCode, Integer userId)
     {
         this.assignCode = assignCode;
         this.userId = userId;

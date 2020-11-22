@@ -1,6 +1,5 @@
 package com.kakao.homework.config;
-import com.kakao.homework.core.ApplicationYmlRead;
-import com.kakao.homework.repository.RedisCrudRepo;
+
 import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -21,19 +20,18 @@ import java.io.IOException;
 @Configuration
 public class RedisConfig {
     private final ApplicationYmlRead applicationYmlRead;
+
     @Bean
     public RedissonClient redissonClient() throws IOException {
         Config config = Config.fromYAML(new ClassPathResource("redisson.yml").getInputStream());
         return Redisson.create(config);
     }
-    /*@Bean
-    public RedissonConnectionFactory redissonConnectionFactory(RedissonClient redisson){
-        return new RedissonConnectionFactory(redisson);
-    }*/
+
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(applicationYmlRead.getHost(), Integer.parseInt(applicationYmlRead.getPort()));
     }
+
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();

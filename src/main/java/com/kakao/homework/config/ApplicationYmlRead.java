@@ -1,4 +1,4 @@
-package com.kakao.homework.core;
+package com.kakao.homework.config;
 
 import lombok.Getter;
 import lombok.Setter;

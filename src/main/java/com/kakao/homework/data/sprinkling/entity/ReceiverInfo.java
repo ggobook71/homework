@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Entity
-public class ReceiverMoney {
+public class ReceiverInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +23,7 @@ public class ReceiverMoney {
     private int recieverMoney;
     private boolean enableYn;
     @Builder
-    public ReceiverMoney(Long id, String recieverId, int recieverMoney, DistMoney assignCode, boolean enableYn)
+    public ReceiverInfo(Long id, String recieverId, int recieverMoney, DistMoney assignCode, boolean enableYn)
     {
         this.id = id;
         this.recieverId = recieverId;

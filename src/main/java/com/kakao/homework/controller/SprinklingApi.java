@@ -16,18 +16,18 @@ public class SprinklingApi {
     private final SprinklingService sprinklingService;
 
     @PostMapping(path = "/sprinkling")
-    public String RequestSprinklingApi(@UserInfoResolver SprinklingHeaderDto user, @RequestBody SprinklingBodyDto body) throws Exception {
+    public Map RequestSprinklingApi(@UserInfoResolver SprinklingHeaderDto user, @RequestBody SprinklingBodyDto body) throws Exception {
         return sprinklingService.Sprinkling(user, body);
     }
 
     @GetMapping("/receiving/{token}")
-    public String RequestReceivingApi(@UserInfoResolver SprinklingHeaderDto user, @PathVariable(value = "token") String token) throws Exception {
-        return sprinklingService.Receiver(user, token);
+    public Map RequestReceivingApi(@UserInfoResolver SprinklingHeaderDto user, @PathVariable(value = "token") String token) throws Exception {
+        return sprinklingService.Receiving(user, token);
     }
 
     @GetMapping("/searching/{token}")
     public Map RequestSearchingApi(@UserInfoResolver SprinklingHeaderDto user, @PathVariable(value = "token") String token) throws Exception {
-        return sprinklingService.Search(user, token);
+        return sprinklingService.Searching(user, token);
     }
 
 }

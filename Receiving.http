@@ -1,4 +1,5 @@
 GET http://localhost:8080/api/receiving/{{token}}
 Content-Type: application/json
-X-USER-ID: 133
+X-USER-ID: 145
 X-ROOM-ID: ABC
+
