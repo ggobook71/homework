@@ -8,8 +8,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hibernate.type.descriptor.java.JdbcDateTypeDescriptor.DATE_FORMAT;
 
@@ -38,6 +41,29 @@ public class DistMoney {
         this.distMoney = distMoney;
         this.distDateTime = distDateTime;
         this.receiveNum = receiveNum;
+    }
+
+   public Map getDistMoneyState()
+    {
+        int receiveSumMoney =0;
+        List<Map<String, Object>> receiver_Info = new ArrayList<>();
+
+        for (ReceiverMoney receiverMoney:this.getReceiverMoneyList()) {
+            if(receiverMoney.isEnableYn())
+            {
+                receiveSumMoney = receiveSumMoney + receiverMoney.getRecieverMoney();
+                Map listmap = new HashMap();
+                listmap.put("receive_money",receiverMoney.getRecieverMoney());
+                listmap.put("receiver_id",receiverMoney.getRecieverId());
+                receiver_Info.add(listmap);
+            }
+        }
+        Map map = new HashMap();
+        map.put("dist_date_time",this.distDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+        map.put("dist_money", this.distMoney);
+        map.put("receive_sum_money", receiveSumMoney);
+        map.put("receiver_Info", receiver_Info);
+        return map;
     }
     /*public void setReceiverMoneyList(List<ReceiverMoney> receiverMoneyList)
     {

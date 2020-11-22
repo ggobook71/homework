@@ -1,0 +1,6 @@
+POST http://localhost:8080/api/sprinkling
+Content-Type: application/json
+X-USER-ID: 123
+X-ROOM-ID: ABC
+
+{"distMoney" :  25000, "receiveNum" :  5}

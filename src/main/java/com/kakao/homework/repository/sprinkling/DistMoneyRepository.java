@@ -10,4 +10,5 @@ public interface DistMoneyRepository extends JpaRepository<DistMoney, Long> {
     DistMoney findByAssignCode(String assignCode);
     //Optional<DistMoney> findByIdAndDistDateTimeAfter(String token, LocalDateTime dateTime);
     DistMoney findByAssignCodeAndDistDateTimeBetween(String token, LocalDateTime dateTime, LocalDateTime now);
+    DistMoney findByAssignCodeAndUserIdAndDistDateTimeBetween(String token, String userId, LocalDateTime dateTime, LocalDateTime now);
 }

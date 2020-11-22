@@ -2,8 +2,8 @@ package com.kakao.homework.service.sprinkling;
 
 import com.kakao.homework.core.MoneyDistributor;
 import com.kakao.homework.core.UUIDTokenMaker;
-import com.kakao.homework.data.sprinkling.dto.SprinklingApiDto;
-import com.kakao.homework.data.sprinkling.dto.UserInfoDto;
+import com.kakao.homework.data.sprinkling.dto.SprinklingBodyDto;
+import com.kakao.homework.data.sprinkling.dto.SprinklingHeaderDto;
 import com.kakao.homework.data.sprinkling.entity.CacheEntity;
 import com.kakao.homework.data.sprinkling.entity.DistMoney;
 import com.kakao.homework.data.sprinkling.entity.ReceiverMoney;
@@ -17,9 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -34,7 +33,7 @@ public class SprinklingService {
     private final ReceiverMoneyRepository receiverMoneyRepository;
 
     @Transactional
-    public String Sprinkling(UserInfoDto header, SprinklingApiDto.Sprinkling body) throws Exception {
+    public String Sprinkling(SprinklingHeaderDto header, SprinklingBodyDto body) throws Exception {
         String token;
         String userId;
         //고유토큰 3자리 발급
@@ -53,9 +52,13 @@ public class SprinklingService {
     }
 
     @Transactional
-    public String Receiver(UserInfoDto header, String token) throws Exception{
-        Optional<CacheEntity> cacheEntity = redisCrudRepo.findById(token);
+    public String Receiver(SprinklingHeaderDto header, String token) throws Exception{
 
+        //락구현 해야함...
+
+
+
+        Optional<CacheEntity> cacheEntity = redisCrudRepo.findById(token);
         boolean enabled = cacheEntity.isPresent();
         if(enabled)
         {
@@ -105,10 +108,11 @@ public class SprinklingService {
         }
     }
 
-    public String Search(UserInfoDto header, SprinklingApiDto.Search body){
-
-
-        return "";
+    @Transactional
+    public Map Search(SprinklingHeaderDto header, String token){
+        DistMoney distMoney = distMoneyRepository.findByAssignCodeAndUserIdAndDistDateTimeBetween(
+                token, header.getUserId().toString(), LocalDateTime.now().minusDays(7L), LocalDateTime.now()); //7일 기간 동안만 조회 가능
+        return distMoney.getDistMoneyState();
     }
 
 }

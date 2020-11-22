@@ -1,15 +1,11 @@
 package com.kakao.homework.core;
 
-import com.kakao.homework.data.sprinkling.dto.SprinklingApiDto;
-import com.kakao.homework.data.sprinkling.dto.UserInfoDto;
+import com.kakao.homework.data.sprinkling.dto.SprinklingBodyDto;
+import com.kakao.homework.data.sprinkling.dto.SprinklingHeaderDto;
 import com.kakao.homework.data.sprinkling.entity.DistMoney;
 import com.kakao.homework.data.sprinkling.entity.ReceiverMoney;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.xml.transform.Result;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +13,7 @@ import java.util.Random;
 
 @Component
 public class MoneyDistributor {
-    public List<ReceiverMoney> RandomDist(int money, int distnumber, UserInfoDto header, SprinklingApiDto.Sprinkling body, String token) throws Exception
+    public List<ReceiverMoney> RandomDist(int money, int distnumber, SprinklingHeaderDto header, SprinklingBodyDto body, String token) throws Exception
     {
         List<ReceiverMoney> receiverMoneyList = new ArrayList<>();
         ReceiverMoney receiverMoney = new ReceiverMoney();

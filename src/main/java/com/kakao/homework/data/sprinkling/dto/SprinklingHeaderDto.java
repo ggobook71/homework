@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserInfoDto {
+public class SprinklingHeaderDto {
     private Integer userId;
     private String roomId;
 }
