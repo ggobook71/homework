@@ -7,6 +7,5 @@ import java.time.LocalDateTime;
 
 public interface DistMoneyRepository extends JpaRepository<DistMoney, Long> {
     DistMoney findByAssignCodeAndDistDateTimeBetween(String token, LocalDateTime dateTime, LocalDateTime now);
-
     DistMoney findByAssignCodeAndUserIdAndDistDateTimeBetween(String token, Integer userId, LocalDateTime dateTime, LocalDateTime now);
 }

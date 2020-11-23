@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Component
 public class MoneyDistributor {
-    public List<ReceiverInfo> RandomDist(int money, int distnumber, SprinklingHeaderDto header, SprinklingBodyDto body, String token) {
+    public List<ReceiverInfo> Distributor(SprinklingHeaderDto header, SprinklingBodyDto body, String token) {
         List<ReceiverInfo> receiverInfoList = new ArrayList<>();
         ReceiverInfo receiverInfo = new ReceiverInfo();
         Random random = new Random();
+        int money = body.getDistMoney();
+        int distnumber = body.getReceiveNum();
         DistMoney distMoney = DistMoney.builder()
                 .assignCode(token)
                 .distDateTime(LocalDateTime.now())

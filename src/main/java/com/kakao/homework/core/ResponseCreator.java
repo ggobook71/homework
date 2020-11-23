@@ -7,14 +7,14 @@ import java.util.Map;
 
 @Component
 public class ResponseCreator {
-    public Map SingleKeyValueString(String name, String value) {
-        Map map = new HashMap();
+    public Map<String, String> SingleKeyValueString(String name, String value) {
+        Map<String, String> map = new HashMap<>();
         map.put(name, value);
         return map;
     }
 
-    public Map SingleKeyValueInt(String name, int value) {
-        Map map = new HashMap();
+    public Map<String, Integer> SingleKeyValueInt(String name, int value) {
+        Map<String, Integer> map = new HashMap<>();
         map.put(name, value);
         return map;
     }

@@ -16,8 +16,9 @@ public enum ErrorCode {
     FAILED_GET_MONEY_UN_TARGET(400, "B003", " 받기 대상자가 아닙니다."),
     FAILED_GET_MONEY_ONE_MORE(400, "B004", " 받기는 한번만 가능합니다."),
     FAILED_GET_MONEY_MINUTE(400, "B005", " 받기 가능시간이 만료 되었습니다."),
-    FAILED_SEARCH_RECEIVER_INFO(400, "S001", " 조회 권한이 없거나 데이터가 존재하지 않습니다."),
+    FAILED_SEARCH_RECEIVER_INFO(400, "S001", " 조회 권한이 없거나 기간이 만료 되었습니다."),
     FAILED_GET_MONEY(400, "S001", " 할당 된 금액을 받기 실패 하였습니다."),
+    FAILED_SAVE_MONEY(400, "S002", " 금액이나 뿌릴인원이 존재하지 않습니다."),
     ;
     private final String code;
     private final String message;

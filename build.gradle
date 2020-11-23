@@ -25,7 +25,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'it.ozimov:embedded-redis:0.7.2'
     implementation 'junit:junit:4.12'
-    implementation 'junit:junit:4.12'
     compile 'org.redisson:redisson-spring-boot-starter:3.13.6'
     compile 'com.google.code.gson:gson'
     compileOnly 'org.projectlombok:lombok'
@@ -33,10 +32,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params'
 }
 
 test {

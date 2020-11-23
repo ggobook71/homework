@@ -1,4 +1,4 @@
 GET http://localhost:8080/api/searching/{{token}}
 Content-Type: application/json
-X-USER-ID: 123
-X-ROOM-ID: ABC
+X-USER-ID: 1232
+X-ROOM-ID: ABC2
