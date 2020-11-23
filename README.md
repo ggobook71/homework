@@ -5,32 +5,44 @@
 * 다수의 서버에 다수 인스턴스로 동작하더라도 기능에 문제가 없도록 설계
 * 각 기능 및 제약사항에 대한 단위테스트 작성
 ---
-### 개발
+### 개발환경
 * SpringBoot 2.4
-* Rediss/Redisson
-* Spring Data JPA
-* MariaDB
+* Spring Data JPA 2.4
+* Rediss 2.4 / Redisson 3.13.5
+* MariaDB 10.5
+* Junit / SpringbootTest / Postman
 ---
 ### 핵심 문제해결 전략
 * 머니분배 전략은 Random 분배 적용
 * 요구사항에 부합하는 간소화된 API서버 구현을 위해 데이터 모델링 간소화
 * 10분이 지난 요청에 대해 에러 처리를 해야 하므로 Redis로 TTL 적용
 * 다수의 서버와 인스턴스에서 수행하기 위한 Distribute Lock 적용으로 동시성 해결
-* 분산서버의 특징상 DB 엑세스를 최소화하는 방향으로 설계
+* 분산서버 운영의 특징상 DB 엑세스를 최소화하는 방향으로 설계
 ---
 ### 실행환경
 * Redis Server 로컬 환경 필요 (Localhost:6379)
 * MariaDb 10.5 
 ---
 ### 데이터 모델
+* 테이블 - dist_money, receiver_info*
+    
+![image](https://user-images.githubusercontent.com/67616881/99951416-6f0d1b00-2dc1-11eb-82a2-3c49765a1cae.png)
+
+* dist_money 
+    
+![image](https://user-images.githubusercontent.com/67616881/99953364-800b5b80-2dc4-11eb-8253-1914021e088a.png)
+
+* receiver_info
+
+![image](https://user-images.githubusercontent.com/67616881/99953246-5e11d900-2dc4-11eb-82db-d184b08d9e36.png)
 
 ---
 ### 테스트 진행 방식
 * Spring Boot Test
   * 각 기능 단위테스트 진행
-    * 상황에 따른 데이터 전략 수립 후 데이터 변경후 각 기능 단위테스트 진행
+    * 상황에 따른 데이터 전략 수립 후 데이터 변경후 각 기능위주 단위테스트 진행
 * Postman
-  * 응답값 확인 및 API 통합테스트 진행
+  * 응답값 확인 및 각 에러코드 예외처리위주 API 통합테스트 진행
 ---
 ### 에러코드(제약사항)
 ~~~java
