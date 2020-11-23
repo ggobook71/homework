@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/*
+ReceiverInspector
+예외처리 제약사항
+*/
 @Component
 public class ReceiverInspector {
     public void exceptionProcessor(Optional<RedisEntity> cacheEntity, SprinklingHeaderDto header, DistMoney distMoney) throws BusinessException {

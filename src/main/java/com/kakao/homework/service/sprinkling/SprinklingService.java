@@ -14,7 +14,7 @@ import com.kakao.homework.data.sprinkling.entity.DistMoney;
 import com.kakao.homework.data.sprinkling.entity.ReceiverInfo;
 import com.kakao.homework.repository.RedisCrudRepository;
 import com.kakao.homework.repository.sprinkling.DistMoneyRepository;
-import com.kakao.homework.repository.sprinkling.ReceiverMoneyRepository;
+import com.kakao.homework.repository.sprinkling.ReceiverInfoRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -26,12 +26,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/*
+SprinklingService
+*/
 @Service
 public class SprinklingService {
     private final long oneWeek = 7L;
     private final RedisCrudRepository redisCrudRepository;
     private final DistMoneyRepository distMoneyRepository;
-    private final ReceiverMoneyRepository receiverMoneyRepository;
+    private final ReceiverInfoRepository receiverInfoRepository;
     private final RedissonClient redissonClient;
     private final ResponseCreator responseCreator;
     private final ReceiverInspector receiverInspector;
@@ -39,18 +42,22 @@ public class SprinklingService {
     @Autowired
     public SprinklingService(RedisCrudRepository redisCrudRepository
             , DistMoneyRepository distMoneyRepository
-            , ReceiverMoneyRepository receiverMoneyRepository
+            , ReceiverInfoRepository receiverInfoRepository
             , RedissonClient redissonClient
             , ResponseCreator responseCreator
             , ReceiverInspector receiverInspector) {
         this.redisCrudRepository = redisCrudRepository;
         this.distMoneyRepository = distMoneyRepository;
-        this.receiverMoneyRepository = receiverMoneyRepository;
+        this.receiverInfoRepository = receiverInfoRepository;
         this.redissonClient = redissonClient;
         this.responseCreator = responseCreator;
         this.receiverInspector = receiverInspector;
     }
 
+    /*
+    Sprinkling
+    뿌리기
+   */
     @Transactional
     public Map<String, String> Sprinkling(SprinklingHeaderDto header, SprinklingBodyDto body) {
         receiverInspector.exceptionProcessor(header, body); //예외처리 로직
@@ -62,10 +69,14 @@ public class SprinklingService {
         List<ReceiverInfo> receiverMonies = moneyDistributor.Distributor(header, body, token);
         DistMoney distMoney = receiverMonies.get(0).getAssignCode();
         distMoneyRepository.save(distMoney); //돈 랜덤 분배 및 저장
-        receiverMoneyRepository.saveAll(receiverMonies);
+        receiverInfoRepository.saveAll(receiverMonies);
         return responseCreator.SingleKeyValueString("token", token);
     }
 
+    /*
+    Receiving
+    받기
+   */
     @Transactional
     public Map<String, Integer> Receiving(SprinklingHeaderDto header, String token) throws Exception {
         ReceiveMoney receiveMoney = new ReceiveMoney();
@@ -83,7 +94,7 @@ public class SprinklingService {
                             token, LocalDateTime.now().minusDays(oneWeek), LocalDateTime.now());
                     receiverInspector.exceptionProcessor(cacheEntity, header, distMoney); //예외처리 로직
                     ReceiverInfo receiverInfo = receiveMoney.save(header, distMoney); //저장처리
-                    receiverMoneyRepository.save(receiverInfo);
+                    receiverInfoRepository.save(receiverInfo);
                     return responseCreator.SingleKeyValueInt("receive_money", receiverInfo.getRecieverMoney()); //성공시 해당 금액을 응답값으로 내려줍니다.
                 }
             } finally {
@@ -93,6 +104,10 @@ public class SprinklingService {
         throw new BusinessException("유효 하지 않은 요청입니다.", ErrorCode.FAILED_GET_MONEY_BAD_REQUEST);
     }
 
+    /*
+    Searching
+    조회하기
+   */
     @Transactional
     public Map<String, Object> Searching(SprinklingHeaderDto header, String token) {
         DistMoney distMoney = distMoneyRepository.findByAssignCodeAndUserIdAndDistDateTimeBetween(

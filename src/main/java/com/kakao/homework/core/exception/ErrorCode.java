@@ -2,6 +2,10 @@ package com.kakao.homework.core.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+/*
+ErrorCode
+에러코드 정의
+*/
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
     // Common

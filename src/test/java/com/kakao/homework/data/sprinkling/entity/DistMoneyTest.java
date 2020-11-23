@@ -1,8 +1,6 @@
 package com.kakao.homework.data.sprinkling.entity;
 
-import com.kakao.homework.HomeworkApplication;
 import com.kakao.homework.repository.sprinkling.DistMoneyRepository;
-import com.kakao.homework.service.sprinkling.SprinklingService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

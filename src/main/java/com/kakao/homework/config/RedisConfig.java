@@ -15,6 +15,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.io.IOException;
 
+/*
+redis-config - ApplicationYmlRead
+*/
 @RequiredArgsConstructor
 @EnableRedisRepositories
 @Configuration

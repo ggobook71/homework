@@ -11,6 +11,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 
+/*
+UserInfoArgResolver
+Controller resolver -> @UserInfoResolver
+*/
 @RequiredArgsConstructor
 public class UserInfoArgResolver implements HandlerMethodArgumentResolver {
     @Override

@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/*
+MoneyDistributor
+뿌릴금액 분배기
+*/
 public class MoneyDistributor {
     public List<ReceiverInfo> Distributor(SprinklingHeaderDto header, SprinklingBodyDto body, String token) {
         List<ReceiverInfo> receiverInfoList = new ArrayList<>();

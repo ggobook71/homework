@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+DistMoney
+뿌리기 정보
+*/
 @NoArgsConstructor
 @Getter
 @Entity
@@ -19,15 +23,15 @@ public class DistMoney {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String assignCode;
-    @OneToMany(mappedBy = "assignCode", cascade = CascadeType.ALL)
+    private String assignCode; // this is token
+    @OneToMany(mappedBy = "assignCode", cascade = CascadeType.ALL) //관계매핑(TOKEN)
     private List<ReceiverInfo> receiverInfoList = new ArrayList<>();
-    private Integer userId;
-    private String roomId;
-    private int distMoney;
-    private int receiveNum;
+    private Integer userId; //뿌린사람ID
+    private String roomId; //방ID
+    private int distMoney; //금액
+    private int receiveNum; //받을사람수
     //@DateTimeFormat(pattern = DATE_TIME_FORMAT)
-    private LocalDateTime distDateTime;
+    private LocalDateTime distDateTime; //뿌리기 시작한 시간
 
     @Builder
     public DistMoney(String assignCode, Integer userId, String roomId, int distMoney, int receiveNum, LocalDateTime distDateTime) {

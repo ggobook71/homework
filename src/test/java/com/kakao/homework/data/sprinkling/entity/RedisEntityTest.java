@@ -1,7 +1,6 @@
 package com.kakao.homework.data.sprinkling.entity;
 
 import com.kakao.homework.repository.RedisCrudRepository;
-import com.kakao.homework.repository.sprinkling.DistMoneyRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

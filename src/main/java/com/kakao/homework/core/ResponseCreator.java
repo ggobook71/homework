@@ -5,6 +5,10 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ResponseCreator
+처리 응답 매퍼
+*/
 @Component
 public class ResponseCreator {
     public Map<String, String> SingleKeyValueString(String name, String value) {

@@ -7,6 +7,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 import java.util.List;
 
+/*
+ApiConfig - Controller
+*/
 @Configuration
 public class ApiConfig extends WebMvcConfigurationSupport {
     @Override

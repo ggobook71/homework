@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+/*
+GlobalExceptionHandler
+에러응답생성
+*/
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {

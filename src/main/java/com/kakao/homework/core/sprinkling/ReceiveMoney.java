@@ -6,6 +6,10 @@ import com.kakao.homework.data.sprinkling.dto.SprinklingHeaderDto;
 import com.kakao.homework.data.sprinkling.entity.DistMoney;
 import com.kakao.homework.data.sprinkling.entity.ReceiverInfo;
 
+/*
+ReceiveMoney
+받을 금액 정하기
+*/
 public class ReceiveMoney {
     public ReceiverInfo save(SprinklingHeaderDto header, DistMoney distMoney) {
         for (ReceiverInfo receiverInfo : distMoney.getReceiverInfoList()) {

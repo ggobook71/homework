@@ -1,5 +1,9 @@
 package com.kakao.homework.core.exception;
 
+/*
+BusinessException
+사용자정의 예외처리
+*/
 public class BusinessException extends RuntimeException {
     private ErrorCode errorCode;
 
