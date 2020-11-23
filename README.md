@@ -30,7 +30,7 @@
 ---
 ### 에러코드(제약사항)
 ~~~java
-(STATUS, ERRORCODE, MESSAGE)
+(STATUS, ERRORCODE, MESSAGE) // (400, "C001", " Invalid Input Value")
 INVALID_INPUT_VALUE(400, "C001", " Invalid Input Value"),
 METHOD_NOT_ALLOWED(405, "C002", " Invalid Input Value"),
 INTERNAL_SERVER_ERROR(500, "C003", "Server Error"),
