@@ -30,6 +30,7 @@
 ---
 ### 에러코드(제약사항)
 ~~~java
+(STATUS, ERRORCODE, MESSAGE)
 INVALID_INPUT_VALUE(400, "C001", " Invalid Input Value"),
 METHOD_NOT_ALLOWED(405, "C002", " Invalid Input Value"),
 INTERNAL_SERVER_ERROR(500, "C003", "Server Error"),
@@ -45,6 +46,7 @@ FAILED_SEARCH_RECEIVER_INFO(400, "S001", " 조회 권한이 없거나 기간이 
 FAILED_GET_MONEY(400, "S001", " 할당 된 금액을 받기 실패 하였습니다."),
 FAILED_SAVE_MONEY(400, "S002", " 금액이나 뿌릴인원이 존재하지 않습니다."),
 ~~~
+---
 ### API
 *뿌리기 생성 요청*
 ~~~http request
