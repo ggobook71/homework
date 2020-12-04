@@ -9,16 +9,15 @@ import java.util.Map;
 ResponseCreator
 처리 응답 매퍼
 */
-@Component
-public class ResponseCreator {
-    public Map<String, String> SingleKeyValue(String name, String value) {
-        Map<String,String> map = new HashMap<>();
+public class ResponseCreator<T> {
+    public Map<String, T> SingleKeyValue(String name, T value) {
+        Map<String,T> map = new HashMap<>();
         map.put(name, value);
         return map;
     }
-    public Map<String, Integer>  SingleKeyValue(String name, Integer value) {
+   /* public Map<String, Integer>  SingleKeyValueString(String name, Integer value) {
         Map<String, Integer> map = new HashMap<>();
         map.put(name, value);
         return map;
-    }
+    }*/
 }

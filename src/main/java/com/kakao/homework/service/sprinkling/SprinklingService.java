@@ -30,27 +30,25 @@ import java.util.concurrent.TimeUnit;
 SprinklingService
 */
 @Service
-public class SprinklingService<K,T> {
+public class SprinklingService {
     private final long oneWeek = 7L;
     private final RedisCrudRepository redisCrudRepository;
     private final DistMoneyRepository distMoneyRepository;
     private final ReceiverInfoRepository receiverInfoRepository;
     private final RedissonClient redissonClient;
-    private final ResponseCreator responseCreator;
     private final ReceiverInspector receiverInspector;
+
 
     @Autowired
     public SprinklingService(RedisCrudRepository redisCrudRepository
             , DistMoneyRepository distMoneyRepository
             , ReceiverInfoRepository receiverInfoRepository
             , RedissonClient redissonClient
-            , ResponseCreator responseCreator
             , ReceiverInspector receiverInspector) {
         this.redisCrudRepository = redisCrudRepository;
         this.distMoneyRepository = distMoneyRepository;
         this.receiverInfoRepository = receiverInfoRepository;
         this.redissonClient = redissonClient;
-        this.responseCreator = responseCreator;
         this.receiverInspector = receiverInspector;
     }
 
@@ -63,6 +61,7 @@ public class SprinklingService<K,T> {
         receiverInspector.exceptionProcessor(header, body); //예외처리 로직
         UUIDTokenMaker uuidTokenMaker = new UUIDTokenMaker();
         MoneyDistributor moneyDistributor = new MoneyDistributor();
+        ResponseCreator<String> responseCreator = new ResponseCreator<>();
         String token = uuidTokenMaker.getNewToken(); //고유토큰 3자리 발급
         RedisEntity redisEntity = RedisEntity.builder().assignCode(token).userId(header.getUserId()).build(); //redis저장
         redisCrudRepository.save(redisEntity);
@@ -71,6 +70,7 @@ public class SprinklingService<K,T> {
             DistMoney distMoney = receiverMonies.get(0).getAssignCode();
             distMoneyRepository.save(distMoney); //돈 랜덤 분배 및 저장
             receiverInfoRepository.saveAll(receiverMonies);
+
             return responseCreator.SingleKeyValue("token", token);
         }
         throw new BusinessException("유효 하지 않은 요청입니다.", ErrorCode.FAILED_GET_MONEY_BAD_REQUEST);
@@ -83,6 +83,7 @@ public class SprinklingService<K,T> {
     @Transactional
     public Map<String, Integer> Receiving(SprinklingHeaderDto header, String token) throws Exception {
         ReceiveMoney receiveMoney = new ReceiveMoney();
+        ResponseCreator<Integer> responseCreator = new ResponseCreator<>();
         RReadWriteLock rwlock = redissonClient.getReadWriteLock(token); //distribute lock
         RLock lock = rwlock.readLock();
         lock.lock();
