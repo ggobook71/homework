@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 SprinklingService
 */
 @Service
-public class SprinklingService {
+public class SprinklingService<K,T> {
     private final long oneWeek = 7L;
     private final RedisCrudRepository redisCrudRepository;
     private final DistMoneyRepository distMoneyRepository;
