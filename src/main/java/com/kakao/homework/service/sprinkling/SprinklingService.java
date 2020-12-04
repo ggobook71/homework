@@ -67,7 +67,7 @@ public class SprinklingService {
         RedisEntity redisEntity = RedisEntity.builder().assignCode(token).userId(header.getUserId()).build(); //redis저장
         redisCrudRepository.save(redisEntity);
         List<ReceiverInfo> receiverMonies = moneyDistributor.Distributor(header, body, token);
-        if(receiverMonies.isEmpty()) {
+        if(!receiverMonies.isEmpty()) {
             DistMoney distMoney = receiverMonies.get(0).getAssignCode();
             distMoneyRepository.save(distMoney); //돈 랜덤 분배 및 저장
             receiverInfoRepository.saveAll(receiverMonies);
