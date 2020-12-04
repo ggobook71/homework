@@ -17,7 +17,7 @@ ReceiverInspector
 */
 @Component
 public class ReceiverInspector{
-    public void exceptionProcessor(Optional<RedisEntity> cacheEntity, SprinklingHeaderDto header, DistMoney distMoney) throws BusinessException{
+    public void exceptionProcessor(SprinklingHeaderDto header, DistMoney distMoney) throws BusinessException{
         for (ReceiverInfo receiverInfo : distMoney.getReceiverInfoList()) {
             if (distMoney.getUserId().toString().equals(header.getUserId().toString())){ // 뿌린자가 받기 요청시
                 throw new BusinessException("받기 대상자가 아닙니다.", ErrorCode.FAILED_GET_MONEY_UN_TARGET);
@@ -29,7 +29,7 @@ public class ReceiverInspector{
             }
         }
     }
-    public void exceptionProcessor(SprinklingHeaderDto header, SprinklingBodyDto body) throws BusinessException {
+    public void exceptionProcessor(SprinklingBodyDto body) throws BusinessException {
         //null이 아닌 값 0 체크
         if (body.getDistMoney() == 0 || body.getReceiveNum() == 0) {
             throw new BusinessException("금액이나 뿌릴인원이 존재하지 않습니다.", ErrorCode.FAILED_SAVE_MONEY);

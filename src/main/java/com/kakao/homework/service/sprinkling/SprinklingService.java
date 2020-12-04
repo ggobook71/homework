@@ -15,6 +15,7 @@ import com.kakao.homework.data.sprinkling.entity.ReceiverInfo;
 import com.kakao.homework.repository.RedisCrudRepository;
 import com.kakao.homework.repository.sprinkling.DistMoneyRepository;
 import com.kakao.homework.repository.sprinkling.ReceiverInfoRepository;
+import lombok.NonNull;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -58,10 +59,10 @@ public class SprinklingService {
    */
     @Transactional
     public Map<String, String> Sprinkling(SprinklingHeaderDto header, SprinklingBodyDto body) {
-        receiverInspector.exceptionProcessor(header, body); //예외처리 로직
+        receiverInspector.exceptionProcessor(body); //예외처리 로직
         UUIDTokenMaker uuidTokenMaker = new UUIDTokenMaker();
         MoneyDistributor moneyDistributor = new MoneyDistributor();
-        ResponseCreator<String> responseCreator = new ResponseCreator<>();
+        ResponseCreator<String, String> responseCreator = new ResponseCreator<>();
         String token = uuidTokenMaker.getNewToken(); //고유토큰 3자리 발급
         RedisEntity redisEntity = RedisEntity.builder().assignCode(token).userId(header.getUserId()).build(); //redis저장
         redisCrudRepository.save(redisEntity);
@@ -82,7 +83,7 @@ public class SprinklingService {
     @Transactional
     public Map<String, Integer> Receiving(SprinklingHeaderDto header, String token) throws Exception {
         ReceiveMoney receiveMoney = new ReceiveMoney();
-        ResponseCreator<Integer> responseCreator = new ResponseCreator<>();
+        ResponseCreator<String, Integer> responseCreator = new ResponseCreator<>();
         RReadWriteLock rwlock = redissonClient.getReadWriteLock(token); //distribute lock
         RLock lock = rwlock.readLock();
         lock.lock();
@@ -95,7 +96,7 @@ public class SprinklingService {
                 cacheEntity.orElseThrow();
                 DistMoney distMoney = distMoneyRepository.findByAssignCodeAndDistDateTimeBetween(
                         token, LocalDateTime.now().minusDays(oneWeek), LocalDateTime.now());
-                receiverInspector.exceptionProcessor(cacheEntity, header, distMoney); //예외처리 로직
+                receiverInspector.exceptionProcessor(header, distMoney); //예외처리 로직
                 ReceiverInfo receiverInfo = receiveMoney.save(header, distMoney); //저장처리
                 receiverInfoRepository.save(receiverInfo);
                 return responseCreator.SingleKeyValue("receive_money", receiverInfo.getRecieverMoney()); //성공시 해당 금액을 응답값으로 내려줍니다.

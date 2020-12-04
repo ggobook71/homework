@@ -49,7 +49,7 @@ class ReceiverInspectorTest {
 
             BusinessException thrown = assertThrows(
                     BusinessException.class,
-                    () -> receiverInspector.exceptionProcessor(cacheEntity, sprinklingHeaderDto, distMoney),
+                    () -> receiverInspector.exceptionProcessor(sprinklingHeaderDto, distMoney),
                     "Expected doThing() to throw, but it didn't"
             );
             assertTrue(thrown.getErrorCode().getMessage().contains("받기"));
@@ -65,14 +65,12 @@ class ReceiverInspectorTest {
     @Transactional
     void exceptionProcessor2() {
 
-        SprinklingHeaderDto sprinklingHeaderDto = new SprinklingHeaderDto();
-        sprinklingHeaderDto.setUserId(145);
         SprinklingBodyDto sprinklingBodyDto = new SprinklingBodyDto();
         sprinklingBodyDto.setReceiveNum(0);
         sprinklingBodyDto.setDistMoney(0);
         BusinessException thrown = assertThrows(
                 BusinessException.class,
-                () -> receiverInspector.exceptionProcessor(sprinklingHeaderDto, sprinklingBodyDto),
+                () -> receiverInspector.exceptionProcessor(sprinklingBodyDto),
                 "Expected doThing() to throw, but it didn't"
         );
         assertTrue(thrown.getErrorCode().getMessage().contains("금액이나 뿌릴인원이 존재하지 않습니다."));
