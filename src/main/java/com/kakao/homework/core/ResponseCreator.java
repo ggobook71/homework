@@ -15,9 +15,4 @@ public class ResponseCreator<T> {
         map.put(name, value);
         return map;
     }
-   /* public Map<String, Integer>  SingleKeyValueString(String name, Integer value) {
-        Map<String, Integer> map = new HashMap<>();
-        map.put(name, value);
-        return map;
-    }*/
 }

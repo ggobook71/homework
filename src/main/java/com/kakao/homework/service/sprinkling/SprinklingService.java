@@ -70,7 +70,6 @@ public class SprinklingService {
             DistMoney distMoney = receiverMonies.get(0).getAssignCode();
             distMoneyRepository.save(distMoney); //돈 랜덤 분배 및 저장
             receiverInfoRepository.saveAll(receiverMonies);
-
             return responseCreator.SingleKeyValue("token", token);
         }
         throw new BusinessException("유효 하지 않은 요청입니다.", ErrorCode.FAILED_GET_MONEY_BAD_REQUEST);
