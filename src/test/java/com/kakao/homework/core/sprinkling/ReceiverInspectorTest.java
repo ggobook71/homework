@@ -53,6 +53,7 @@ class ReceiverInspectorTest {
                     "Expected doThing() to throw, but it didn't"
             );
             assertTrue(thrown.getErrorCode().getMessage().contains("받기"));
+
         }
     }
 

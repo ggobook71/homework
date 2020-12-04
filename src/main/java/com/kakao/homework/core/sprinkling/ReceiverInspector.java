@@ -16,8 +16,8 @@ ReceiverInspector
 예외처리 제약사항
 */
 @Component
-public class ReceiverInspector {
-    public void exceptionProcessor(Optional<RedisEntity> cacheEntity, SprinklingHeaderDto header, DistMoney distMoney) throws BusinessException {
+public class ReceiverInspector{
+    public void exceptionProcessor(Optional<RedisEntity> cacheEntity, SprinklingHeaderDto header, DistMoney distMoney) throws BusinessException{
         for (ReceiverInfo receiverInfo : distMoney.getReceiverInfoList()) {
             if (distMoney.getUserId().toString().equals(header.getUserId().toString())){ // 뿌린자가 받기 요청시
                 throw new BusinessException("받기 대상자가 아닙니다.", ErrorCode.FAILED_GET_MONEY_UN_TARGET);

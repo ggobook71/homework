@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.redisson.spring.data.connection.RedissonConnectionFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -23,7 +25,6 @@ redis-config - ApplicationYmlRead
 @Configuration
 public class RedisConfig {
     private final ApplicationYmlRead applicationYmlRead;
-
     @Bean
     public RedissonClient redissonClient() throws IOException {
         Config config = Config.fromYAML(new ClassPathResource("redisson.yml").getInputStream());
@@ -31,12 +32,12 @@ public class RedisConfig {
     }
 
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(applicationYmlRead.getHost(), Integer.parseInt(applicationYmlRead.getPort()));
+    public RedissonConnectionFactory redisConnectionFactory() throws IOException {
+        return new RedissonConnectionFactory(this.redissonClient().getConfig());
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
+    public RedisTemplate<String, Object> redisTemplate() throws IOException {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());

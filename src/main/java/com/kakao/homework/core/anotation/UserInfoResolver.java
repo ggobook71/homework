@@ -14,5 +14,4 @@ UserInfoArgResolver
 */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UserInfoResolver {
-}
+public @interface UserInfoResolver {}

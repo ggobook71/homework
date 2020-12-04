@@ -5,6 +5,7 @@ import com.kakao.homework.data.sprinkling.dto.SprinklingBodyDto;
 import com.kakao.homework.data.sprinkling.dto.SprinklingHeaderDto;
 import com.kakao.homework.service.sprinkling.SprinklingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public class SprinklingApi {
     }
 
     @PostMapping(path = "/sprinkling")
-    public Map<String, String> requestSprinklingApi(@UserInfoResolver SprinklingHeaderDto user, @RequestBody SprinklingBodyDto body) throws Exception {
+    public Map<String, String> requestSprinklingApi(@UserInfoResolver SprinklingHeaderDto user, @RequestBody SprinklingBodyDto body) {
         return sprinklingService.Sprinkling(user, body);
     }
 
@@ -46,7 +47,7 @@ public class SprinklingApi {
     조회하기
     */
     @GetMapping("/searching/{token}")
-    public Map<String, Object> requestSearchingApi(@UserInfoResolver SprinklingHeaderDto user, @PathVariable(value = "token") String token) throws Exception {
+    public Map<String, Object> requestSearchingApi(@UserInfoResolver SprinklingHeaderDto user, @PathVariable(value = "token") String token) {
         return sprinklingService.Searching(user, token);
     }
 }

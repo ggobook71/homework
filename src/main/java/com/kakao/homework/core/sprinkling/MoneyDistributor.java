@@ -6,18 +6,21 @@ import com.kakao.homework.data.sprinkling.entity.DistMoney;
 import com.kakao.homework.data.sprinkling.entity.ReceiverInfo;
 import org.springframework.stereotype.Component;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Stream;
 
 /*
 MoneyDistributor
 뿌릴금액 분배기
 */
 public class MoneyDistributor {
-    public List<ReceiverInfo> Distributor(SprinklingHeaderDto header, SprinklingBodyDto body, String token) {
-        List<ReceiverInfo> receiverInfoList = new ArrayList<>();
+    public List<ReceiverInfo>Distributor(SprinklingHeaderDto header, SprinklingBodyDto body, String token) {
+        List<ReceiverInfo> receiverInfoList = new ArrayList();
         ReceiverInfo receiverInfo = new ReceiverInfo();
         Random random = new Random();
         int money = body.getDistMoney();

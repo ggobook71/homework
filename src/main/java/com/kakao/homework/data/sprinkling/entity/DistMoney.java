@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /*
 DistMoney
@@ -30,7 +31,6 @@ public class DistMoney {
     private String roomId; //방ID
     private int distMoney; //금액
     private int receiveNum; //받을사람수
-    //@DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime distDateTime; //뿌리기 시작한 시간
 
     @Builder
@@ -43,20 +43,19 @@ public class DistMoney {
         this.receiveNum = receiveNum;
     }
 
-    public Map getDistMoneyState() {
+    public Map<String, Object> getDistMoneyState() {
         int receiveSumMoney = 0;
         List<Map<String, Object>> receiver_Info = new ArrayList<>();
-
         for (ReceiverInfo receiverInfo : this.getReceiverInfoList()) {
             if (receiverInfo.isEnableYn()) {
                 receiveSumMoney = receiveSumMoney + receiverInfo.getRecieverMoney();
-                Map listmap = new HashMap();
+                Map<String,Object> listmap = new HashMap<>();
                 listmap.put("receive_money", receiverInfo.getRecieverMoney());
                 listmap.put("receiver_id", receiverInfo.getRecieverId());
                 receiver_Info.add(listmap);
             }
         }
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("dist_date_time", this.distDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
         map.put("dist_money", this.distMoney);
         map.put("receive_sum_money", receiveSumMoney);

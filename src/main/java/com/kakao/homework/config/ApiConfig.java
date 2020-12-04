@@ -14,7 +14,6 @@ ApiConfig - Controller
 public class ApiConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        super.addArgumentResolvers(argumentResolvers);
         argumentResolvers.add(new UserInfoArgResolver());
     }
 }

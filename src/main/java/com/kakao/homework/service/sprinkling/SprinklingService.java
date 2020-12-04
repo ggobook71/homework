@@ -67,10 +67,13 @@ public class SprinklingService {
         RedisEntity redisEntity = RedisEntity.builder().assignCode(token).userId(header.getUserId()).build(); //redis저장
         redisCrudRepository.save(redisEntity);
         List<ReceiverInfo> receiverMonies = moneyDistributor.Distributor(header, body, token);
-        DistMoney distMoney = receiverMonies.get(0).getAssignCode();
-        distMoneyRepository.save(distMoney); //돈 랜덤 분배 및 저장
-        receiverInfoRepository.saveAll(receiverMonies);
-        return responseCreator.SingleKeyValueString("token", token);
+        if(receiverMonies.isEmpty()) {
+            DistMoney distMoney = receiverMonies.get(0).getAssignCode();
+            distMoneyRepository.save(distMoney); //돈 랜덤 분배 및 저장
+            receiverInfoRepository.saveAll(receiverMonies);
+            return responseCreator.SingleKeyValue("token", token);
+        }
+        throw new BusinessException("유효 하지 않은 요청입니다.", ErrorCode.FAILED_GET_MONEY_BAD_REQUEST);
     }
 
     /*
@@ -89,14 +92,13 @@ public class SprinklingService {
                 Optional<RedisEntity> cacheEntity = redisCrudRepository.findById(token);
                 boolean enabled = cacheEntity.isPresent();
                 receiverInspector.exceptionProcessor(enabled); //예외처리 로직
-                if (enabled) {
-                    DistMoney distMoney = distMoneyRepository.findByAssignCodeAndDistDateTimeBetween(
-                            token, LocalDateTime.now().minusDays(oneWeek), LocalDateTime.now());
-                    receiverInspector.exceptionProcessor(cacheEntity, header, distMoney); //예외처리 로직
-                    ReceiverInfo receiverInfo = receiveMoney.save(header, distMoney); //저장처리
-                    receiverInfoRepository.save(receiverInfo);
-                    return responseCreator.SingleKeyValueInt("receive_money", receiverInfo.getRecieverMoney()); //성공시 해당 금액을 응답값으로 내려줍니다.
-                }
+                cacheEntity.orElseThrow();
+                DistMoney distMoney = distMoneyRepository.findByAssignCodeAndDistDateTimeBetween(
+                        token, LocalDateTime.now().minusDays(oneWeek), LocalDateTime.now());
+                receiverInspector.exceptionProcessor(cacheEntity, header, distMoney); //예외처리 로직
+                ReceiverInfo receiverInfo = receiveMoney.save(header, distMoney); //저장처리
+                receiverInfoRepository.save(receiverInfo);
+                return responseCreator.SingleKeyValue("receive_money", receiverInfo.getRecieverMoney()); //성공시 해당 금액을 응답값으로 내려줍니다.
             } finally {
                 lock.unlock(); //처리 후 락 해제
             }

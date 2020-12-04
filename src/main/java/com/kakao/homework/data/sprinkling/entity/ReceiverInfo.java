@@ -4,6 +4,7 @@ import com.sun.istack.Nullable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 
@@ -20,8 +21,8 @@ public class ReceiverInfo {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "ASSIGN_CODE")
+    @NonNull
     private DistMoney assignCode; //this is token
-    @Nullable
     private String recieverId; //받은사람 ID
     private int recieverMoney; //받을 돈
     private boolean enableYn; //받았는지 여부
